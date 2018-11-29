@@ -4,15 +4,20 @@
       .home_form{
         max-width: 50%;
         margin-left: 25%;
-        margin-top: 20%;
+        margin-top: 10%;
       }
       .home_title{
           color: #d3d3d3;
           margin-left: 37%;
       }
     </style>
+    <br>
+    <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">Hello and Welcome to Help Me.</h4>
+            <p>Help Me is an app, that helps it users search through query and category specific emergency events and incidents. Try it out, search for anything.</p>
+    </div>
     <div class="container">
-            <form class="home_form" action="/search" method="POST">
+            <form class="home_form" action="/tweetapi" method="POST">
                 <h1 class="home_title">Help Me!!!</h1>
                 <label for="name"> </label>
                 <input class="form-control search_input" type="text" id="name" name="query" placeholder="Search an emergency" /><br/>

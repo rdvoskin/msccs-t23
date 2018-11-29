@@ -6,6 +6,8 @@ import json
 from bson import json_util, ObjectId
 import app.search_rest as rest
 #from classifier.test_classifier_with_evaluation import clas
+#http handler
+import http.client
 
 global G_collection #the instance of MongoCollection, Don't need to create a lot of instance.
 
@@ -15,7 +17,7 @@ def home():
         global G_collection
         G_collection=MongoCollection.MongoCollection(collectionname='TweetsData', MongoURI="mongodb://localhost:27017/") #create the instance in the home page. Each time the project should run start with home page.
         user = {'username': 'Team23'}
-        return render_template('index.html', title='Home', user=user)
+        return render_template('home.html', title='Home', search= True)
 
 @app.route('/index') #home and index page.
 def index():
@@ -29,7 +31,7 @@ def home2():
         user = {'username': 'Team23'}
         return render_template('home.html', title='Home', search= True)
 
-@app.route('/tweetapi', methods=['GET'])# a route to call tweet api,by a seatch form
+@app.route('/tweetapi', methods=['GET', 'POST'])# a route to call tweet api,by a seatch form
 def tweetapi():
     return render_template('form.html')
 
