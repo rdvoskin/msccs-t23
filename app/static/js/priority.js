@@ -1,29 +1,29 @@
-$(document).ready(function() {
+// $(document).ready(function() {
 
-	$('form').on('submit', function(event) {
+// 	$('form').on('submit', function(event) {
+// 		console.log('here')
+// 		$.ajax({
+// 			data : {
+// 				priority : $('#priority').val()
+// 							},
+// 			type : 'POST',
+// 			url : '/priority'
+// 		})
+// 		.done(function(data) {
 
-		$.ajax({
-			data : {
-				priority : $('#priority').val()
-							},
-			type : 'POST',
-			url : '/priority'
-		})
-		.done(function(data) {
+// 			if (data.error) {
+// 				$('#errorAlert').text(data.error).show();
+// 				$('#successAlert').hide();
+// 			}
+// 			else {
+// 				$('#successAlert').text(data.name).show();
+// 				$('#errorAlert').hide();
+// 			}
 
-			if (data.error) {
-				$('#errorAlert').text(data.error).show();
-				$('#successAlert').hide();
-			}
-			else {
-				$('#successAlert').text(data.name).show();
-				$('#errorAlert').hide();
-			}
+// 		});
 
-		});
+// 		event.preventDefault();
 
-		event.preventDefault();
+// 	});
 
-	});
-
-});
+// });

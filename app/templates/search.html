@@ -4,17 +4,14 @@
 <!-- <div class="container"> -->
         <div class="row">
             <div class="col-md-9">
-                    <!-- {% for tweet in tweets %}
-                  <blockquote>
-
-                    </blockquote>
-                    <blockquote class="twitter-tweet" data-lang="en">
-                        <p lang="en" dir="ltr">just setting up my twttr</p>&mdash; Jack (@jack) <a href="https://twitter.com/jack/status/20">March 21, 2006</a>
-                    </blockquote>
-                        <a href="'https://publish.twitter.com/oembed?url=https://twitter.com/anybody/status/'"{{ tweet.postID }}></a>
-                    {% endfor %} -->
+                <!-- loop through the list passed from app.py -->
+                {% for tweet in tweets %}
+                    <div>
+                      <!-- show each html but for each html, you have to strip the quotes by using |safe -->
+                        {{tweet| safe}}
+                    </div>
+                {% endfor %}
             </div>
-
             <div class="col-md-3">
                 <h4>Filters</h4>
                 <div class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown" style="">

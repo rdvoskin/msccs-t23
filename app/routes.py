@@ -68,21 +68,26 @@ def api_filter():
         database.insert(results)
         return jsonify({"name": ids})
 
-@app.route('/priority_html', methods=['GET'])# a route to call tweet api,by a seatch form
+@app.route('/priority_html', methods=['GET', 'POST'])# a route to call tweet api,by a seatch form
 def priotiy_html():
         initdatabase()
         return render_template('form_by_priority.html')
 
 @app.route('/priority', methods=['POST'])
 def api_filter_priority():
-        initdatabase()
-        priority= request.form['priority']
-        print(priority)
-        # use the name that you gave to your collection
-        G_collection.set_collection(collectionname='TweetsData')
-        ids = G_collection.return_tweets_by_priority(priority)
+        if request.method == 'POST': 
+                initdatabase()
+                priority= request.form['priority']
+                print(priority)
+    else:
+             return render_template('form_by_priority.html')
+        
+        # # use the name that you gave to your collection
+        # G_collection.set_collection(collectionname='TweetsData')
+        # ids = G_collection.return_tweets_by_priority(priority)
 
-        return jsonify({"name": len(ids)})
+
+        # return jsonify({"name": len(ids)})
 
 @app.route('/category_html', methods=['GET'])# a route to call tweet api,by a seatch form
 def category():
@@ -117,3 +122,29 @@ def api_filter_event():
         #text= G_collection.find_text_by_ids(ids)
 
         return jsonify({"name": len(ids)})
+
+# code for visualizing tweets
+@app.route("/search", methods= ['GET', 'POST'])
+def search():
+        #first to collect a query from front-end and store in a variable
+        query= request.form['query']
+        #create a list to hold all the data returned
+        tweet_html= []
+        # query the db based on the query from front-end
+        for tweet in mongo.db.training.find().limit(int(2)):
+                tweetid= tweet['postID']
+                # building the url to use for the http get request
+                url= 'https://publish.twitter.com/oembed?url=https://twitter.com/anybody/status/'+ tweetid
+                # using the get request
+                page = requests.get(url)
+                # some ids get back empty because maybe the tweet is deleted, so only get json if true
+                if page:
+                #return the response of the get request in json form
+                        tweet= page.json()
+                        # target the field html from the json response
+                        tweet_tag= tweet['html']
+                        print(tweet_tag)
+                        #append all the html responses to a list to make to loop with in the html
+                        tweet_html.append(tweet_tag)
+        
+        return render_template('search.html', tweets=tweet_html)
