@@ -1,32 +1,141 @@
 {% extends "layout.html" %}
 {% block content %}
 <br>
+<style type="text/css">
+	.container{
+		color: black;
+	}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	var active_categories = []
+	$('.category-filters').children('label').each(function(i) {
+		if ($(this).hasClass('active')) {
+			active_categories.push($(this).attr('id'))
+		}
+	});
+	$(document).on('click', '.category', function () {
+		var check_val = $.inArray($(this).attr('id'), active_categories)
+		if (check_val == -1) {
+			active_categories.push($(this).attr('id'))
+		} else {
+			active_categories.splice(check_val, 1)
+		}
+
+		console.log(active_categories)
+		$.ajax({
+			url: "/filter_tweets",
+			type: "get",
+			data: {categories: active_categories.join(',')},
+			success: function(response) {
+			$("#tweet-grid").html(response);
+			},
+			error: function(xhr) {
+			//Do Something to handle error
+			}
+		});
+	});
+});
+</script>
 <!-- <div class="container"> -->
+
+                <!-- loop through the list passed from app.py -->
+<div class="container">
 	<div class="row">
-		<div class="col-md-9">
-				<br><br><br><br>
-				<form class="form-inline">
-				  <div class="form-group">
-					<label class="sr-only" for="query">Query</label>
-					<input type="text" class="form-control" id="query" placeholder="query">
-				  </div>
-				  <button type="submit" class="btn btn-default">Submit</button>
-				</form>
-				<br>
-				<div id="successAlert" class="alert alert-success" role="alert" style="display:none;"></div>
-				<div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;"></div>
-				<!-- {% for tweet in tweets %}
-			  <blockquote>
-
-				</blockquote>
-				<blockquote class="twitter-tweet" data-lang="en">
-					<p lang="en" dir="ltr">just setting up my twttr</p>&mdash; Jack (@jack) <a href="https://twitter.com/jack/status/20">March 21, 2006</a>
-				</blockquote>
-					<a href="'https://publish.twitter.com/oembed?url=https://twitter.com/anybody/status/'"{{ tweet.postID }}></a>
-				{% endfor %} -->
+		<div class="col-sm">
+			<h2>Categories:</h2>
 		</div>
+	</div>
+	<div class="row">
+		{% for key, value in categories.items() %}
+			{% if value is defined and value|length > 0 %}
+			<div class="col-sm">
+				<h4>{{key| safe}}</h4>
+				<div class="category-filters btn-group-toggle" data-toggle="buttons">
+					{% for category in value %}
+					<label id="{{category| safe}}" class="category btn btn-secondary active">
+						<input type="checkbox" checked autocomplete="off"> {{category| safe}}
+					</label>
+		        	{% endfor %}
+				</div>
+			</div>
+			{% endif %}
+		{% endfor %}
 
-		<div class="col-md-3">
+<!-- 		<div class="col-sm">
+			<h4>Calls:</h4>
+			<div class="btn-group-toggle" data-toggle="buttons">
+				<label class="btn btn-secondary active">
+					<input type="checkbox" checked autocomplete="off"> Checked
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="checkbox" checked autocomplete="off"> Checked
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="checkbox" checked autocomplete="off"> Checked
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="checkbox" checked autocomplete="off"> Checked
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="checkbox" checked autocomplete="off"> Checked
+				</label>
+				<label class="btn btn-secondary active">
+					<input type="checkbox" checked autocomplete="off"> Checked
+				</label>
+			</div>
+		</div> -->
+	</div>
+	<div class="row">
+		<div class="col-sm">
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Priority
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm">
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Media
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm">
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Order
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<a class="dropdown-item" href="#">Something else here</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div id="tweet-grid">
+	{% for tweet in tweets %}
+	      <!-- show each html but for each html, you have to strip the quotes by using |safe -->
+	        {{tweet['html']| safe}}
+	{% endfor %}
+</div>
+
+<!-- 		<div class="col-md-3">
 				<div class="card" style="width: 15rem;">
 					<div class="card-header">
 							Filters
@@ -51,7 +160,6 @@
 					</div>
 				</div>
 				
-				</div>
-	</div>
+	</div> -->
 <!-- </div> -->
 {% endblock content %}

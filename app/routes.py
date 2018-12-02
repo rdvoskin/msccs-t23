@@ -3,11 +3,16 @@ from app import app
 from classifier.data_files_scripts import MongoCollection
 from app.searchForm import searchForm
 import json
+import urllib.request
 from bson import json_util, ObjectId
 import app.search_rest as rest
 #from classifier.test_classifier_with_evaluation import clas
 
 G_collection=None #the instance of MongoCollection, Don't need to create a lot of instance.
+# results = None
+# tweetids = None
+# categories = None
+tweets = None
 
 def initdatabase(): #!!!!A function to ensure the database is connected. Add this in EVERY routes function please.
         global G_collection
@@ -21,6 +26,68 @@ def initdatabase(): #!!!!A function to ensure the database is connected. Add thi
 def home2():
         initdatabase()
         return render_template('home.html', title='Home', search= True)
+
+# def remove_html(postids):
+#     global results
+#     global tweetids
+#     global categories
+#     global html_tweets
+#     new_html = []
+#     for html_tweet in html_tweets:
+#         for postid in postids:
+#             if postid in html_tweet:
+#                 new_html.append(html_tweet)
+#                 break
+
+#     return new_html
+
+
+@app.route('/filter_tweets')
+def filter_tweets():
+    global tweets
+    tweets_copy = tweets.copy()
+    active_categories = request.args.get('categories').split(',')
+    print(active_categories)
+
+    new_html = []
+    for tweet in tweets_copy:
+        if not set(tweet['Category']).isdisjoint(active_categories):
+            new_html.append(tweet['html'])
+
+    return ''.join(new_html)
+
+
+@app.route("/search", methods= ['POST'])
+def search():
+        global tweets
+        #first to collect a query from front-end and store in a variable
+        query= request.form['query']
+        # use the name that you gave to your collection
+        database=G_collection.set_collection(collectionname='TweetsData')
+        tweets, tweetids, categories = rest.query_search(query)
+        # query the db based on the query from front-end
+        for tweet in tweets:
+                # building the url to use for the http get request
+                url= 'https://publish.twitter.com/oembed?url=https://twitter.com/anybody/status/'+ tweet['Postid']
+                # using the get request
+                response = urllib.request.urlopen(url)
+                print(response)
+                data = json.load(response)
+                tweet['html'] = data['html']
+
+                # some ids get back empty because maybe the tweet is deleted, so only get json if true
+                # if page:
+                # #return the response of the get request in json form
+                #         tweet= page.json()
+                #         # target the field html from the json response
+                #         tweet_tag= tweet['html']
+                #         print(tweet_tag)
+                #         #append all the html responses to a list to make to loop with in the html
+                #         tweet_html.append(tweet_tag)
+        
+        print(tweets)
+        return render_template('form.html', tweets=tweets, categories=categories) 
+
 
 @app.route('/tweetapi', methods=['GET', 'POST'])# a route to call tweet api,by a seatch form
 def tweetapi():
@@ -63,8 +130,8 @@ def api_filter():
         initdatabase()
         query= request.form['query']
         # use the name that you gave to your collection
-        database=G_collection.set_collection(collectionname='Test_Panos')
-        results, ids = rest.query_search(query)
+        database=G_collection.set_collection(collectionname='TweetsData')
+        results, ids,dic_cates = rest.query_search(query)
         database.insert(results)
         return jsonify({"name": ids})
 

@@ -2,3 +2,14 @@
 **/__pycache__
 .DS_Store
 __pycache__
+classifier/**/*.csv
+clasifier/*.csv
+**/flask/Lib/__pycache__
+**/classifier/__pycache__
+**/app/__pycache__
+**/flask/Lib
+**\flask\Lib\__pycache__
+**\classifier\__pycache__
+**\app\__pycache__
+**\flask\Lib
+**/*.pyc
